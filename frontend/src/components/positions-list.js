@@ -36,6 +36,15 @@ const DEFAULT_COLUMNS = [
         ),
     },
     {
+        Header: "Enrolled",
+        accessor: "current_enrollment",
+    },
+    {
+        Header: "Waitlisted",
+        accessor: "current_waitlisted",
+    },
+
+    {
         Header: "Contract Template",
         accessor: "contract_template.template_name",
     },
@@ -51,6 +60,8 @@ const DEFAULT_COLUMNS = [
  */
 export function PositionsList(props) {
     const { positions, columns = DEFAULT_COLUMNS } = props;
+    console.log(positions);
+
     return (
         <React.Fragment>
             <h3>Positions</h3>
