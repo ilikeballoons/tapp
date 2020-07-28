@@ -2,7 +2,13 @@
  * @jest-environment node
  */
 import { describe, it, expect } from "./utils";
-import { validate, SpreadsheetRowMapper } from "../libs/importExportUtils";
+import {
+    validate,
+    SpreadsheetRowMapper,
+    dataToFile,
+    normalizeImport,
+} from "../libs/importExportUtils";
+import { diffImport } from "../libs/diffUtils";
 
 // Run the actual tests for both the API and the Mock API
 describe("Import/export library functionality", () => {
@@ -107,6 +113,76 @@ describe("Import/export library functionality", () => {
         ).not.toEqual(targetData);
     });
 
-    it.todo("Export data to a JSON/CSV/XLSX");
+    it.todo("Export data to a JSON");
+    it.todo("Export data to a CSV");
+    it.todo("Export data to a XLSX");
     it.todo("Import data from a JSON/CSV/XLSX");
+});
+
+describe("Diff library functionality", () => {
+    const original = [
+        {
+            id: 2,
+            first_name: "Princess",
+            last_name: "Peach",
+            email: "sorry@inaothercastle.com",
+            utorid: "IBakedACakeForYou",
+        },
+        {
+            id: 3,
+            first_name: "Mario",
+            last_name: "Mario",
+            email: "m@mushroomkingdom.com",
+            utorid: "itasmeM",
+        },
+        {
+            id: 4,
+            first_name: "Luigi",
+            last_name: "Mario",
+            email: "l@mushromkingdom.com",
+            utorid: "ohIMissedL",
+        },
+    ];
+
+    const diff = [...original];
+    diff[0] = {
+        id: 2,
+        first_name: "Princess",
+        last_name: "Daisy",
+        email: "sorry@inaothercastle.com",
+        utorid: "IBakedACakeForYou",
+    };
+
+    it("Generate correct DiffSpecs for Instructors", () => {
+        const instructorSchema = {
+            keys: ["first_name", "last_name", "utorid", "email"],
+            keyMap: {
+                "First Name": "first_name",
+                "Given Name": "first_name",
+                First: "first_name",
+                "Last Name": "last_name",
+                Surname: "last_name",
+                "Family Name": "last_name",
+                Last: "last_name",
+            },
+            requiredKeys: ["utorid"],
+            primaryKey: "utorid",
+            dateColumns: [],
+            baseName: "instructors",
+        };
+
+        const instructors = normalizeImport(
+            { data: original, fileType: "json" },
+            instructorSchema
+        );
+
+        const diffed = diffImport.instructors(diff, { instructors });
+        const [modified, ...same] = diffed;
+        expect(modified.status).toEqual("modified");
+        expect(modified.changes).toEqual({ last_name: '"Peach" → "Daisy"' });
+        expect(modified.obj).toEqual(diff[0]);
+        expect(same[0].status).toEqual("duplicate");
+        expect(same[0].changes).toEqual({});
+        expect(same[0].obj).toEqual(original[1]);
+    });
 });
