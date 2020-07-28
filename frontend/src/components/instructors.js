@@ -23,14 +23,13 @@ const DEFAULT_COLUMNS = [
  */
 export function InstructorsList(props) {
     const { instructors, columns = DEFAULT_COLUMNS } = props;
-    const pageSize = instructors?.length || 20;
     return (
         <React.Fragment>
             <ReactTable
                 data={instructors}
                 columns={columns}
                 showPagination={false}
-                defaultPageSize={pageSize}
+                defaultPageSize={Number.MAX_SAFE_INTEGER}
                 minRows={1}
             />
         </React.Fragment>

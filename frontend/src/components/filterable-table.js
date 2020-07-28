@@ -165,7 +165,6 @@ function FilterableTable(props) {
         }
     }
 
-    const pageSize = filteredData?.length || 20;
     let tableComponent = (
         <SelectTable
             ref={(r) => (reactTableRef = r)}
@@ -178,7 +177,7 @@ function FilterableTable(props) {
             selectType="checkbox"
             keyField="id"
             showPagination={false}
-            defaultPageSize={pageSize}
+            defaultPageSize={Number.MAX_SAFE_INTEGER}
             minRows={1}
         />
     );
